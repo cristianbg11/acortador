@@ -7,11 +7,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "URL", schema = "PUBLIC", catalog = "ACORTADOR")
 public class UrlEntity {
-    private int id;
-    private String code;
-    private String url;
-    private Integer cantidad;
-    private Collection<ClienteEntity> clientesById;
+    public int id;
+    public String code;
+    public String url;
+    public Integer cantidad;
+    public Collection<ClienteEntity> clientesById;
 
     @Id
     @Column(name = "ID", nullable = false)
@@ -69,7 +69,7 @@ public class UrlEntity {
         return Objects.hash(id, code, url, cantidad);
     }
 
-    @OneToMany(mappedBy = "urlByUrlId")
+    @OneToMany(mappedBy = "urlByUrlId", cascade = CascadeType.ALL)
     public Collection<ClienteEntity> getClientesById() {
         return clientesById;
     }

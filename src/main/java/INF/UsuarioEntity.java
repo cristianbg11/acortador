@@ -88,7 +88,7 @@ public class UsuarioEntity {
         return Objects.hash(id, nombre, username, password, administrador);
     }
 
-    @OneToMany(mappedBy = "usuarioByUsuarioId")
+    @OneToMany(mappedBy = "usuarioByUsuarioId", cascade = CascadeType.ALL)
     public Collection<ClienteEntity> getClientesById() {
         return clientesById;
     }

@@ -138,10 +138,10 @@
             <div class="container-fluid text-center">
                 <div class="d-sm-flex justify-content-between align-items-center mb-4">
                     <h3 class="text-dark mb-0">Dashboard</h3><a class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" href="#"><i class="fas fa-download fa-sm text-white-50"></i>&nbsp;Generate Report</a></div>
-                <form class="search-form">
+                <form action="/acortar" method="POST" class="search-form">
                     <div class="input-group">
-                        <div class="input-group-prepend"></div><input class="form-control" type="text" placeholder="I am looking for..">
-                        <div class="input-group-append"><button class="btn btn-light" type="button">Acortar</button></div>
+                        <div class="input-group-prepend"></div><input class="form-control" type="text" placeholder="Inserte url" name="url">
+                        <button class="btn btn-light">Acortar</button>
                     </div>
                 </form>
                 <div class="table-responsive" style="margin-bottom: 15px;">

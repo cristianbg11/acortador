@@ -12,16 +12,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.metamodel.EntityType;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static spark.Spark.*;
 
@@ -48,8 +47,7 @@ public class Main {
         port(8080);
         staticFiles.location("/publico");
         EntityManager em = getSession();
-        int n = 10000 + new Random().nextInt(90000);
-        String shorturl = idToShortURL(n);
+
         if (secion.find(UsuarioEntity.class, 0)==null){
             em.getTransaction().begin();
             UsuarioEntity admin = new UsuarioEntity();
@@ -80,6 +78,45 @@ public class Main {
             attributes.put("usuario",usuario);
             return new ModelAndView(attributes, "index.ftl");
         } , new FreeMarkerEngine());
+
+        post("/insertar", (request, response) -> {
+            em.getTransaction().begin();
+            UsuarioEntity usuario = new UsuarioEntity();
+            usuario.username = request.queryParams("username");
+            usuario.nombre = request.queryParams("nombre");
+            usuario.password = request.queryParams("password");
+            usuario.administrador = Boolean.parseBoolean(request.queryParams("administrador"));
+            em.persist(usuario);
+            em.getTransaction().commit();
+            response.redirect("/");
+            return "Usuario Creado";
+        }); // Crea un usuario
+
+        post("/acortar", (request, response) -> {
+            spark.Session session=request.session(true);
+            UsuarioEntity usuario = (UsuarioEntity)(session.attribute("usuario"));
+            em.getTransaction().begin();
+            int n = 10000 + new Random().nextInt(90000);
+            ClienteEntity cliente = new ClienteEntity();
+            UrlEntity url = new UrlEntity();
+            url.code = idToShortURL(n);
+            url.url = request.queryParams("url");
+            cliente.ip = String.valueOf(Inet4Address.getLocalHost());
+            cliente.sistema = request.userAgent();
+            //Date date = new Date();
+            //cliente.fecha = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(String.valueOf(date));
+            cliente.fecha = new Date();
+            if(usuario!=null){
+                cliente.usuarioByUsuarioId = usuario;
+            }
+            //url.clientesById.add(cliente);
+            //em.persist(url);
+            cliente.urlByUrlId = url;
+            em.persist(cliente);
+            em.getTransaction().commit();
+            response.redirect("/index");
+            return "Usuario Creado";
+        });
 
         post("/sesion", (request, response)-> {
             List<UsuarioEntity> users = em.createQuery("select u from UsuarioEntity u", UsuarioEntity.class).getResultList();
